@@ -17,16 +17,16 @@ class EditProfile extends BaseEditProfile
 {
     public static function getSessions(): array
     {
-        if (config(key: 'session.driver') !== 'database') {
+        if (config('session.driver') !== 'database') {
             return [];
         }
 
         return collect(
-            value: DB::connection(config(key: 'session.connection'))->table(table: config(key: 'session.table', default: 'sessions'))
-                ->where(column: 'user_id', operator: Auth::user()->getAuthIdentifier())
-                ->latest(column: 'last_activity')
+            DB::connection(config('session.connection'))->table(config('session.table', 'sessions'))
+                ->where('user_id', Auth::user()->getAuthIdentifier())
+                ->latest('last_activity')
                 ->get()
-        )->map(callback: function ($session): object {
+        )->map(function ($session): object {
             $agent = self::createAgent($session);
 
             return (object) [
@@ -55,7 +55,9 @@ class EditProfile extends BaseEditProfile
             return;
         }
 
-        Auth::guard()->logoutOtherDevices($password);
+        /** @var \Illuminate\Auth\SessionGuard $guard */
+        $guard = Auth::guard();
+        $guard->logoutOtherDevices($password);
 
         request()->session()->put([
             'password_hash_' . Auth::getDefaultDriver() => Auth::user()->getAuthPassword(),
@@ -72,8 +74,8 @@ class EditProfile extends BaseEditProfile
     protected static function createAgent(mixed $session)
     {
         return tap(
-            value: new Agent,
-            callback: fn ($agent) => $agent->setUserAgent(userAgent: $session->user_agent)
+            new Agent,
+            fn ($agent) => $agent->setUserAgent($session->user_agent)
         );
     }
 
@@ -114,7 +116,7 @@ class EditProfile extends BaseEditProfile
                         $this->getEmailFormComponent()
                             ->inlineLabel(false)
                             ->columnSpan(2),
-                        Forms\Components\TextInput::make('Current password')
+                        Forms\Components\TextInput::make('current_password')
                             ->label('Current Password')
                             ->password()
                             ->required()
