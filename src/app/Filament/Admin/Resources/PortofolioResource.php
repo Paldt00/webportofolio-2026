@@ -30,7 +30,7 @@ class PortofolioResource extends Resource
                     ->required()
                     ->maxLength(255),
 
-                // MENGUBAH INPUT TEXT MENJADI DROPDOWN SELECT
+                // DROPDOWN KATEGORI WEBSITE
                 Select::make('category')
                     ->options([
                         'Web Application' => 'Web Application',
@@ -47,8 +47,16 @@ class PortofolioResource extends Resource
                 TextInput::make('year')
                     ->maxLength(255),
 
-                TextInput::make('role')
-                    ->maxLength(255),
+                // MENGUBAH INPUT TEXT ROLE MENJADI DROPDOWN SELECT
+                Select::make('role')
+                    ->options([
+                        'Fullstack Developer' => 'Fullstack Developer',
+                        'Frontend Developer' => 'Frontend Developer',
+                        'Backend Developer' => 'Backend Developer',
+                        'UI/UX Designer' => 'UI/UX Designer',
+                        'Project Manager' => 'Project Manager',
+                    ])
+                    ->required(),
 
                 TextInput::make('link')
                     ->maxLength(255),
