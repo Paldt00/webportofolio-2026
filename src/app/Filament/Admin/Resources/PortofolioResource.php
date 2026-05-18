@@ -13,6 +13,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\Select; // Ditambahkan untuk komponen dropdown select
 use Filament\Tables\Columns\TextColumn;
 
 class PortofolioResource extends Resource
@@ -29,8 +30,16 @@ class PortofolioResource extends Resource
                     ->required()
                     ->maxLength(255),
 
-                TextInput::make('category')
-                    ->maxLength(255),
+                // MENGUBAH INPUT TEXT MENJADI DROPDOWN SELECT
+                Select::make('category')
+                    ->options([
+                        'Web Application' => 'Web Application',
+                        'Company Profile' => 'Company Profile',
+                        'E-Commerce' => 'E-Commerce',
+                        'Landing Page' => 'Landing Page',
+                        'Personal Website' => 'Personal Website',
+                    ])
+                    ->required(),
 
                 TextInput::make('client')
                     ->maxLength(255),

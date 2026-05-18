@@ -10,7 +10,7 @@
 
     <link rel="stylesheet" href="{{ asset('front/tooplate-split-portfolio.css') }}">
     <style>
-        /* Gaya tambahan agar tombol terlihat mati/disabled saat proyek cuma 1 */
+        /* Gaya tambahan agar tombol terlihat mati/disabled saat mencapai batas slide */
         .nav-arrow.disabled {
             opacity: 0.3;
             cursor: not-allowed;
@@ -102,10 +102,6 @@
                             <p>{{ $project->role ?? 'Developer' }}</p>
                         </div>
                     </div>
-                    <div class="project-tags">
-                        <span class="tag">Web Dev</span>
-                        <span class="tag">Fullstack</span>
-                    </div>
                     <a href="{{ $project->link ?? '#' }}" class="view-project-btn">View Project →</a>
                 </div>
                 @endforeach
@@ -120,7 +116,6 @@
                         <div class="info-item"><h4>Year</h4><p>2026</p></div>
                         <div class="info-item"><h4>Role</h4><p>Frontend Dev</p></div>
                     </div>
-                    <div class="project-tags"><span class="tag">UI/UX</span><span class="tag">Frontend</span></div>
                     <a href="#" class="view-project-btn">View Project →</a>
                 </div>
             @endif
@@ -160,12 +155,10 @@
                         <h3>{{ isset($projects) ? count($projects) : 1 }}</h3>
                         <p>Projects</p>
                     </div>
-
                     <div class="stat-item">
                         <h3>{{ isset($projects) ? count($projects) : 1 }}</h3>
                         <p>Clients</p>
                     </div>
-
                     <div class="stat-item">
                         <h3>
                             @php
@@ -342,22 +335,49 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const totalProjects = {{ (isset($projects) && count($projects) > 0) ? count($projects) : 1 }};
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            let currentIndex = 0;
 
-            if (totalProjects <= 1) {
-                const prevBtn = document.getElementById('prevBtn');
-                const nextBtn = document.getElementById('nextBtn');
+            function updateNavButtons() {
+                if (currentIndex === 0) {
+                    if (prevBtn) prevBtn.classList.add('disabled');
+                } else {
+                    if (prevBtn) prevBtn.classList.remove('disabled');
+                }
 
-                if (prevBtn) prevBtn.classList.add('disabled');
-                if (nextBtn) nextBtn.classList.add('disabled');
+                if (currentIndex >= totalProjects - 1) {
+                    if (nextBtn) nextBtn.classList.add('disabled');
+                } else {
+                    if (nextBtn) nextBtn.classList.remove('disabled');
+                }
+            }
 
-                const preventClick = function (e) {
+            updateNavButtons();
+
+            const handleNavClick = function (e, action) {
+                if (action === 'next' && currentIndex >= totalProjects - 1) {
                     e.stopImmediatePropagation();
                     e.preventDefault();
                     return false;
-                };
+                }
+                if (action === 'prev' && currentIndex <= 0) {
+                    e.stopImmediatePropagation();
+                    e.preventDefault();
+                    return false;
+                }
 
-                if (prevBtn) prevBtn.addEventListener('click', preventClick, true);
-                if (nextBtn) nextBtn.addEventListener('click', preventClick, true);
+                if (action === 'next') currentIndex++;
+                if (action === 'prev') currentIndex--;
+
+                setTimeout(updateNavButtons, 50);
+            };
+
+            if (prevBtn) {
+                prevBtn.addEventListener('click', function(e) { handleNavClick(e, 'prev'); }, true);
+            }
+            if (nextBtn) {
+                nextBtn.addEventListener('click', function(e) { handleNavClick(e, 'next'); }, true);
             }
         });
     </script>
