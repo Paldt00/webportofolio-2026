@@ -26,7 +26,7 @@
                 <path d="M 30 40 L 50 60 L 70 40" fill="none" stroke="#ff3366" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
                 <circle cx="50" cy="70" r="3" fill="#ff3366"/>
             </svg>
-            <span>Portfolio</span>
+            <span>Portofolio</span>
         </a>
         <nav>
             <ul class="desktop-nav">
