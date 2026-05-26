@@ -1,37 +1,39 @@
 <?php
 
-namespace App\Filament\Admin\Resources; // <-- PERBAIKAN UTAMA: Ditambahkan 'Admin' sesuai folder lu
+namespace App\Filament\Admin\Resources;
 
-use App\Filament\Admin\Resources\PortofolioResource\Pages\ListPortofolios; // <-- Diubah agar mengarah ke folder Admin
-use App\Filament\Admin\Resources\PortofolioResource\Pages\CreatePortofolio; // <-- Diubah agar mengarah ke folder Admin
-use App\Filament\Admin\Resources\PortofolioResource\Pages\EditPortofolio; // <-- Diubah agar mengarah ke folder Admin
+use App\Filament\Admin\Resources\PortofolioResource\Pages;
 use App\Models\Portofolio;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Select; // Ditambahkan untuk komponen dropdown select
-use Filament\Tables\Columns\TextColumn;
 
 class PortofolioResource extends Resource
 {
     protected static ?string $model = Portofolio::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-briefcase';
+    protected static ?string $navigationLabel = 'Portofolio';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                TextInput::make('title')
+                Forms\Components\FileUpload::make('image')
+                    ->image()
+                    ->directory('portofolios')
+                    ->required()
+                    ->columnSpanFull(),
+
+                Forms\Components\TextInput::make('title')
                     ->required()
                     ->maxLength(255),
 
-                // DROPDOWN KATEGORI WEBSITE
-                Select::make('category')
+                // Category diubah jadi Website Category
+                Forms\Components\Select::make('category')
+                    ->label('Website Category')
                     ->options([
                         'Web Application' => 'Web Application',
                         'Company Profile' => 'Company Profile',
@@ -41,14 +43,18 @@ class PortofolioResource extends Resource
                     ])
                     ->required(),
 
-                TextInput::make('client')
+                // Nama Client diubah jadi Client Name
+                Forms\Components\TextInput::make('client_name')
+                    ->label('Client Name')
                     ->maxLength(255),
 
-                TextInput::make('year')
-                    ->maxLength(255),
+                // Tanggal Proyek diubah jadi Project Creation Date
+                Forms\Components\DatePicker::make('year')
+                    ->label('Project Creation Date')
+                    ->format('Y-m-d')
+                    ->displayFormat('d - m - Y'),
 
-                // MENGUBAH INPUT TEXT ROLE MENJADI DROPDOWN SELECT
-                Select::make('role')
+                Forms\Components\Select::make('role')
                     ->options([
                         'Fullstack Developer' => 'Fullstack Developer',
                         'Frontend Developer' => 'Frontend Developer',
@@ -58,10 +64,9 @@ class PortofolioResource extends Resource
                     ])
                     ->required(),
 
-                TextInput::make('link')
-                    ->maxLength(255),
-
-                Textarea::make('description')
+                // Description diubah jadi Website Description
+                Forms\Components\Textarea::make('description')
+                    ->label('Website Description')
                     ->required()
                     ->columnSpanFull(),
             ]);
@@ -71,12 +76,14 @@ class PortofolioResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('title')->searchable()->sortable(),
-                TextColumn::make('category')->searchable(),
-                TextColumn::make('year')->sortable(),
-            ])
-            ->filters([
-                //
+                Tables\Columns\ImageColumn::make('image'),
+                Tables\Columns\TextColumn::make('title')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('category')->label('Website Category')->searchable(),
+                Tables\Columns\TextColumn::make('client_name')->label('Client Name')->searchable(),
+                Tables\Columns\TextColumn::make('year')
+                    ->label('Project Creation Date')
+                    ->date('d - m - Y')
+                    ->sortable(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -88,19 +95,12 @@ class PortofolioResource extends Resource
             ]);
     }
 
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
-
     public static function getPages(): array
     {
         return [
-            'index' => ListPortofolios::route('/'),
-            'create' => CreatePortofolio::route('/create'),
-            'edit' => EditPortofolio::route('/{record}/edit'),
+            'index' => Pages\ListPortofolios::route('/'),
+            'create' => Pages\CreatePortofolio::route('/create'),
+            'edit' => Pages\EditPortofolio::route('/{record}/edit'),
         ];
     }
 }

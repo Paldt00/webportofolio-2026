@@ -1,22 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Livewire\Livewire;
-use Illuminate\Support\Facades\Response;
-use App\Http\Controllers\PortofolioController;
+use App\Models\{Portofolio, Profile, Contact, Skill};
 
-/* NOTE: Do Not Remove
-/ Livewire asset handling if using sub folder in domain
-*/
-
-Livewire::setUpdateRoute(function ($handle) {
-    return Route::post(config('app.asset_prefix') . '/livewire/update', $handle);
+Route::get('/', function () {
+    return view('welcome', [
+        'portofolios' => Portofolio::latest()->get(),
+        'profile'     => Profile::first() ?? new Profile(),
+        'contact'     => Contact::first() ?? new Contact(),
+        'skills'      => Skill::all(), // Data skill sekarang tersedia di view welcome
+    ]);
 });
-
-Livewire::setScriptRoute(function ($handle) {
-    return Route::get(config('app.asset_prefix') . '/livewire/livewire.js', $handle);
-});
-/*
-/ END
-*/
-Route::get('/', [PortofolioController::class, 'index']);

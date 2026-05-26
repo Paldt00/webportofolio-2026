@@ -6,28 +6,29 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
-{
-    Schema::create('portofolios', function (Blueprint $table) {
-        $table->id();
-        $table->string('title');            // Judul Project
-        $table->string('category')->nullable(); // Kategori (Web Design, Fullstack, dll)
-        $table->text('description');        // Deskripsi Project
-        $table->string('client')->nullable();   // Nama Client / Internal
-        $table->string('year')->nullable();     // Tahun Pembuatan
-        $table->string('role')->nullable();     // Peran Lu (Frontend, Developer, dll)
-        $table->string('link')->nullable();     // Link Demo Project
-        $table->string('image')->nullable();    // Path Foto Project
-        $table->timestamps();
-    });
-}
+    {
+        // Pake dropIfExists biar aman pas migrate:fresh
+        Schema::dropIfExists('portofolios');
 
-    /**
-     * Reverse the migrations.
-     */
+        Schema::create('portofolios', function (Blueprint $table) {
+            $table->id();
+            // Data lama lu (tidak dikurangi)
+            $table->string('image');
+            $table->string('title');
+            $table->string('category');
+            $table->string('client')->nullable(); // Client lama
+            $table->string('role');
+            $table->text('description');
+
+            // Data baru yang lu minta
+            $table->date('year')->nullable(); // Diubah ke date biar bisa jadi kalender
+            $table->string('client_name')->nullable(); // Tambahan untuk Nama Client
+
+            $table->timestamps();
+        });
+    }
+
     public function down(): void
     {
         Schema::dropIfExists('portofolios');

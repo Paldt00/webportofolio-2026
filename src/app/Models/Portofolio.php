@@ -9,15 +9,12 @@ class Portofolio extends Model
 {
     use HasFactory;
 
-    // Daftarkan nama kolom agar bisa diisi lewat Panel Admin (Filament)
-    protected $fillable = [
-        'title',
-        'category',
-        'description',
-        'client',
-        'year',
-        'role',
-        'link',
-        'image'
+    // Tetap gunakan guarded = [] biar bisa input semua field
+    protected $guarded = [];
+
+    // Tambahkan ini biar Laravel otomatis ngerubah kolom 'year' jadi object Tanggal
+    // Jadi lu gak perlu lagi nulis Carbon::parse() di view
+    protected $casts = [
+        'year' => 'date',
     ];
 }
